@@ -2,28 +2,29 @@
 .section .text
 .global _start
 _start:
-    # Set up stack pointer (optional for this example, but good practice)
-    li sp, 0x80010000
+    li sp, 0x80010000    # Set stack pointer
+    la a0, hello_str     # Load string address
+    call sbi_puts        # Print "Hello, World"
 
-    # SBI console output: print "Hello, World\n"
-    la a0, hello_str     # Load address of string into a0
-    call sbi_puts        # Call the subroutine to print it
+    # SBI system reset (modern SBI SRST extension)
+    li a7, 8             # SBI call base for extensions (0x08 for SRST)
+    li a6, 0             # Function ID: 0 (system reset)
+    li a0, 0             # Reset type: 0 (shutdown)
+    li a1, 0             # Reset reason: 0 (no reason)
+    ecall                # Should shut down QEMU
 
-    # Exit cleanly using SBI system reset
-    li a7, 0x5555        # SBI call number for system reset (shutdown)
-    li a0, 0             # Argument: shutdown type (0 = shutdown)
-    ecall                # Invoke SBI
+    # Fallback: infinite loop if shutdown fails
+1:  j 1b                 # Hang here if ecall doesn’t terminate
 
-# Subroutine to print string using SBI console_putc
 sbi_puts:
-    mv t0, a0            # Save string address in t0
-1:  lb a0, (t0)         # Load byte from string
-    beqz a0, 2f          # If null terminator, exit loop
-    li a7, 1             # SBI call number for console_putc
-    ecall                # Print single character
-    addi t0, t0, 1       # Move to next character
-    j 1b                 # Repeat
-2:  ret                  # Return
+    mv t0, a0
+1:  lb a0, (t0)
+    beqz a0, 2f
+    li a7, 1             # SBI console_putc
+    ecall
+    addi t0, t0, 1
+    j 1b
+2:  ret
 
 .section .data
 hello_str:
