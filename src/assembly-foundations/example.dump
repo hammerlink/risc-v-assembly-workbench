@@ -1,0 +1,17 @@
+
+./target/assembly-foundations/example:     file format elf64-littleriscv
+
+Contents of section .text:
+ 100b0 13057000 9308d005 73000000           ..p.....s...    
+Contents of section .riscv.attributes:
+ 0000 41360000 00726973 63760001 2c000000  A6...riscv..,...
+ 0010 05727636 34693270 305f6d32 70305f61  .rv64i2p0_m2p0_a
+ 0020 3270305f 66327030 5f643270 305f7a6d  2p0_f2p0_d2p0_zm
+ 0030 6d756c31 703000                      mul1p0.         
+
+Disassembly of section .text:
+
+00000000000100b0 <_start>:
+   100b0:	00700513          	li	a0,7
+   100b4:	05d00893          	li	a7,93
+   100b8:	00000073          	ecall
