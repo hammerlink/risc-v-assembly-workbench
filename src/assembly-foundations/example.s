@@ -13,6 +13,7 @@ _start:
       addi x17, x0, 93 # this triggers the exit syscall
       ecall
 
+.align 5 # address was 0x100d8 after align 4 => 0x100E0, align 5 should be 0x10100
 there:
       addi x10, x0, 11
       jal x1, end
