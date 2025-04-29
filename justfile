@@ -22,6 +22,17 @@ example-objdump: example-build
     # get object dump
     riscv64-linux-gnu-objdump -sd ./target/assembly-foundations/example > ./src/assembly-foundations/example.dump
 
-example-debug: example-build
-    qemu-riscv64-static -g 1234 ./target/assembly-foundations/example & gdb-multiarch ./target/assembly-foundations/example
+# Create GDB init file
+create-gdb-init:
+    @mkdir -p ./target
+    @echo "target remote :1234" > ./target/gdbinit
+    @echo "display /3i \$pc" >> ./target/gdbinit
+
+example-debug: example-build create-gdb-init
+    ## commands
+    # target remote :1234
+    # display /3i $pc
+    # si
+    # c
+    qemu-riscv64-static -g 1234 ./target/assembly-foundations/example & gdb-multiarch -x ./target/gdbinit ./target/assembly-foundations/example
 
